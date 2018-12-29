@@ -17,17 +17,13 @@ namespace NET_Core_Products_Management__web_version_.Controllers
         }
         public ViewResult Index()
         {
-            return View(productRepository.LoadProducts());
+            return View(productRepository.LoadProducts()
+                .OrderBy(p => p.productId).ToList());
         }
-        public IActionResult ProductCreation()
+        public ViewResult ProductCreation()
         {
             return View();
         }
-        /*public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-            return View();
-        }*/
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

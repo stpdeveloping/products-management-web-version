@@ -1,8 +1,32 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
+﻿<script>
+        $("li").removeClass("is-active");
+        $("#menu1").addClass("is-active");
+</script>
 @model List<Product>
+<table class="table is-fullwidth is-hoverable">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Symbol</th>
+            <th>Quantity</th>
+            <th>Warehouse</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+        <tr>
+            <td>@product.productId</td>
+            <td>@product.productName</td>
+            <td>@product.productSymbol</td>
+            <td>@product.productQuantity</td>
+            <td>@product.productMagName</td>
+            <td><a class="delete is-medium"></a></td>
+        </tr>
+        }
+    </tbody>
+</table>
 
-<p>@ViewData["Title"]</p>
 

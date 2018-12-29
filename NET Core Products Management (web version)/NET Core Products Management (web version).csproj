@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\NET Core Products Management %2528web version%2529\NET Core Products Management %2528web version%2529\wwwroot\js\Index.js" />
     <None Include="wwwroot\favicon.ico" />
   </ItemGroup>
 

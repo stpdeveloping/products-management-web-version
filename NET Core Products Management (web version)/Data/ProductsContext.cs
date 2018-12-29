@@ -24,7 +24,7 @@ namespace NET_Core_Products_Management__web_version_.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=SESHSADBOY-PC\\SQLEXPRESS01;Database=ProductsDB;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("data source=SESHBOY-PC; initial catalog=LocalDB; trusted_connection=true");
             }
         }
 

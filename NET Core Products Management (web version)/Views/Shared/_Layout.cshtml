@@ -7,7 +7,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
-    <script src="js/Index.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $("td").click(function () {
+                if (!$(".input")[0]) {
+                    var rowValue = $(this).text();
+                    $(this).html("")
+                        .append("<input class='input' type='text'>");
+                    $(".input").val(rowValue);
+                    $(".input").focus();
+                    //$(this).parent().addClass("is-selected");
+                    $(this).parent().children().last().html("")
+                        .append("<a class ='button is-dark save'>Save</a>");
+                }
+                $(document).on('click', '.save', function () {
+                    var changedVal = $(".input").val();
+                    $(this).parent().html("")
+                        .append("<a class='delete is-medium'></a>");
+                    $(".input").parent().html(changedVal);
+                });
+            });
+            
+        });
+    </script>
 </head>
 <body>
     <section class="hero is-dark">
@@ -21,8 +44,8 @@
             <nav class="tabs is-boxed is-fullwidth">
                 <div class="container">
                     <ul>
-                        <li class="is-active"><a>Modify products</a></li>
-                        <li><a>Add new products</a></li>
+                        <li id="menu1"><a asp-action="Index">Modify products</a></li>
+                        <li id="menu2"><a asp-action="ProductCreation">Add new product</a></li>
                     </ul>
                 </div>
             </nav>
