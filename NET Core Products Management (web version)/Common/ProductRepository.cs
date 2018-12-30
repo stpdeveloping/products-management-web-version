@@ -31,21 +31,22 @@ namespace NET_Core_Products_Management__web_version_.Models
             }).ToList()));
             return new List<Product>(query);
         }
-        public bool UpdateProductProperty<T>(string columnName, int id, T value, int warehouseId)
+        public bool UpdateProductProperty(string columnName, int id, string value, string warehouseName)
         {
+            int warehouseId = ctx.SlMagazyn.Where(mag => mag.MagNazwa == warehouseName).ToList().First().MagId;
             switch (columnName)
             {
-                case "productSymbol":
+                case "pSymbol":
                     ctx.TwTowar.Where(towar => towar.TwId == id)
-                        .First().TwSymbol = Convert.ToString(value).ToUpper();
+                        .First().TwSymbol = value.ToUpper();
                     break;
-                case "productName":
+                case "pName":
                     ctx.TwTowar.Where(towar => towar.TwId == id)
-                        .First().TwNazwa = Convert.ToString(value);
+                        .First().TwNazwa = value;
                     break;
-                case "productQuantity":
+                case "pQuantity":
                     //ctx.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
-                    var query = ctx.TwStan.Where(stan => stan.StTowId == id && stan.StMagId == warehouseId)
+                    var query = ctx.TwStan.Where(stan => stan.StTowId == id && stan.StMagId == warehouseId).ToList()
                         .First().StStan = Convert.ToDecimal(value);
                     break;
                 default:
@@ -59,9 +60,10 @@ namespace NET_Core_Products_Management__web_version_.Models
             int magId = int.MinValue;
             if (ctx.SlMagazyn
             .Where(magazyn => magazyn.MagNazwa.Equals(product.mag_Nazwa) || magazyn.MagSymbol.Equals(product.mag_Symbol))
+            .ToList()
             .FirstOrDefault() == null)
             {
-                int newmagId = ctx.SlMagazyn.Select(magazyn => magazyn.MagId).Max() + 1;
+                int newmagId = ctx.SlMagazyn.Select(magazyn => magazyn.MagId).ToList().Max() + 1;
                 magId = newmagId;
                 ctx.SlMagazyn.Add(new SlMagazyn
                 {
@@ -69,12 +71,19 @@ namespace NET_Core_Products_Management__web_version_.Models
                     MagNazwa = product.mag_Nazwa,
                     MagSymbol = product.mag_Symbol
                 });
+                ctx.TwStan.Select(st => st.StTowId).Distinct()
+                            .ToList().ForEach(i => ctx.TwStan.Add(new TwStan
+                            {
+                                StTowId = i,
+                                StMagId = newmagId,
+                                StStan = 0
+                            }));
             }
             else
                 magId = ctx.SlMagazyn.Where(magazyn => magazyn.MagNazwa.Equals(product.mag_Nazwa)
-            && magazyn.MagSymbol.Equals(product.mag_Symbol)).First().MagId;
+            && magazyn.MagSymbol.Equals(product.mag_Symbol)).ToList().First().MagId;
             ctx.SaveChanges();
-            int newtwId = ctx.TwTowar.Select(towar => towar.TwId).Max() + 1;
+            int newtwId = ctx.TwTowar.Select(towar => towar.TwId).ToList().Max() + 1;
             ctx.TwTowar.Add(new TwTowar
             {
                 TwId = newtwId,
@@ -93,7 +102,6 @@ namespace NET_Core_Products_Management__web_version_.Models
                 StMagId = magazyn.MagId
             }));
             ctx.SaveChanges();
-            //int newtwId = ctx.tw__Towar.Select(towar => towar.tw_Id).Max() + 1;
             ctx.TwStan.Where(stan => stan.StTowId == newtwId && stan.StMagId == magId).First()
                 .StStan = product.st_Stan;
             ctx.SaveChanges();
@@ -101,9 +109,26 @@ namespace NET_Core_Products_Management__web_version_.Models
         }
         public void RemoveProducts(List<int> productsIds)
         {
-            productsIds.ForEach(i => ctx.TwTowar.Remove(ctx.TwTowar.Where(towar => towar.TwId == i).First()));
-            productsIds.ForEach(i => ctx.TwStan.Remove(ctx.TwStan.Where(stan => stan.StTowId == i).First()));
+            productsIds.ForEach(i => ctx.TwTowar.Remove(ctx.TwTowar.Where(towar => towar.TwId == i).ToList().First()));
+            productsIds.ForEach(i => ctx.TwStan.Remove(ctx.TwStan.Where(stan => stan.StTowId == i).ToList().First()));
             ctx.SaveChanges();
+        }
+        public bool RemoveProducts(int id)
+        {
+            if (ctx.TwTowar.Where(towar => towar.TwId == id).ToList().FirstOrDefault() == null)
+                return false;
+            ctx.TwTowar.Remove(ctx.TwTowar.Where(towar => towar.TwId == id).ToList().First());
+            ctx.TwStan.Remove(ctx.TwStan.Where(stan => stan.StTowId == id).ToList().First());
+            ctx.SaveChanges();
+            return true;
+        }
+        public List<string> GetWarehousesNames()
+        {
+            return ctx.SlMagazyn.Select(mag => mag.MagNazwa).ToList();
+        }
+        public string GetWarehouseSymbol(string wName)
+        {
+            return ctx.SlMagazyn.Where(mag => mag.MagNazwa == wName).ToList().First().MagSymbol;
         }
         private bool disposed = false;
 

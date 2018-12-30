@@ -1,10 +1,184 @@
-﻿
-@{
-    ViewData["Title"] = "ProductCreation";
-}
-<script> 
-        $("li").removeClass("is-active");
-        $("#menu2").addClass("is-active");
+﻿<script>
+    $("li").removeClass("is-active");
+    $("#menu2").addClass("is-active");
+    $(document).ready(function () {
+        $("select").change(function () {
+            var selectedWar = $("select option:selected").text();
+            $.ajax({
+                url: '@Url.Action("ProperWhSymbol", "Home")',
+                type: 'POST',
+                data: { warehouseName: selectedWar },
+                dataType: 'json',
+                async: false,
+                success: function (response) {
+                    $("#disabledInput").val(response);
+                }
+            });
+        });
+        $("a").click(function () {
+            $("#disabledInput").prop("disabled", false);
+            $("#subForm").submit();
+        });
+    });
 </script>
-<h2>ProductCreation</h2>
+@model NET_Core_Products_Management__web_version_.Models.ExtendedProduct
+<div class="columns">
+    <div class="column"></div>
+    <div class="column is-two-fifths">
+        <form asp-action="ProductCreation" id="subForm">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">Name</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input asp-for="tw_Nazwa" class="input" placeholder="Enter the name...">
+                            <p class="help is-danger">
+                        <span asp-validation-for="tw_Nazwa"></span>
+                            </p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">Symbol</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input asp-for="tw_Symbol" class="input" placeholder="Enter the symbol...">
+                            <p class="help is-danger">
+                            <span asp-validation-for="tw_Symbol"></span>
+                            </p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">Unit</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input asp-for="tw_JednMiary" class="input" placeholder="Enter the unit...">
+                        <p class="help is-danger">
+                            <span asp-validation-for="tw_JednMiary"></span>
+                        </p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">Short name</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input asp-for="tw_UrzNazwa" class="input" placeholder="Enter the short name...">
+                        <p class="help is-danger">
+                            <span asp-validation-for="tw_UrzNazwa"></span>
+                        </p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">Purchase unit</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input asp-for="tw_JednMiaryZak" class="input" placeholder="Enter the purchase unit...">
+                        <p class="help is-danger">
+                            <span asp-validation-for="tw_JednMiaryZak"></span>
+                        </p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">Sell unit</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input asp-for="tw_JednMiarySprz" class="input" placeholder="Enter the sell unit...">
+                        <p class="help is-danger">
+                            <span asp-validation-for="tw_JednMiarySprz"></span>
+                        </p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">Quantity</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input asp-for="st_Stan" class="input" placeholder="Enter the product quantity...">
+                        <p class="help is-danger">
+                            <span asp-validation-for="st_Stan"></span>
+                        </p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">W name</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <div class="select">
+                                @{
+                                    //ExtendedProduct prodTemplate = new ExtendedProduct();
+                                    <select asp-for="mag_Nazwa" asp-items="new SelectList(Model.Warehouses)"></select>
+                                }
+                            </div>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">W symbol</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input asp-for="mag_Symbol" class="input" value="MAG" id="disabledInput" disabled>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label"></label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <label class="checkbox">
+                                <input asp-for="tw_Zablokowany" type="checkbox">
+                                Product is blocked
+                            </label>
+                        </p>
+                    </div>
+                </div>
+                <a class="button is-dark">Submit</a>
+            </div>
+        </form>
+    </div>
+        <div class="column"></div>
+    </div>
 

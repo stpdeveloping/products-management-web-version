@@ -8,13 +8,16 @@
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
     <script>
-        $(document).ready(function () {
+        function ajaxQuery() {
 
+        }
+        $(document).ready(function () {
             $("td").click(function () {
-                if (!$(".input")[0]) {
+                if (!$(".input")[0] && $(this).attr('class') !== "pWarehouse") {
                     var rowValue = $(this).text();
+                    var rowColName = $(this).attr('class');
                     $(this).html("")
-                        .append("<input class='input' type='text'>");
+                        .append("<input class='input' id='" + rowColName + "' type = 'text' > ");
                     $(".input").val(rowValue);
                     $(".input").focus();
                     //$(this).parent().addClass("is-selected");
@@ -23,9 +26,41 @@
                 }
                 $(document).on('click', '.save', function () {
                     var changedVal = $(".input").val();
-                    $(this).parent().html("")
-                        .append("<a class='delete is-medium'></a>");
-                    $(".input").parent().html(changedVal);
+                    var modifiedProduct = {};
+                    modifiedProduct.columnName = $(".input").attr('id');
+                    modifiedProduct.productId = $(this).parent().parent().attr('id');             
+                    modifiedProduct.value = changedVal;
+                    modifiedProduct.productMagName =
+                        $("#" + modifiedProduct.productId + " > .pWarehouse")
+                            .text();
+                    $.ajax({
+                        url: '@Url.Action("ProductUpdate", "Home")', 
+                        type: 'PUT',
+                        data: modifiedProduct,
+                        success: function () {
+                            /*$("#" + modifiedProduct.productId).children().last().html("")
+                                .append("<a class='delete is-medium'></a>");
+                            $(".input").parent().html(changedVal);*/
+                            location.reload();
+                        },
+                        error: function (msg) {
+                            alert(msg.responseText);
+                        }
+                    });
+                });
+                $(document).on('click', '.delete', function () {
+                    var productId = $(this).parent().parent().attr('id');
+                    $.ajax({
+                        url: '@Url.Action("ProductDelete", "Home")', 
+                        type: 'DELETE',
+                        data: productId,
+                        success: function () {
+                            location.reload();
+                        },
+                        error: function (msg) {
+                            alert(msg.responseText);
+                        }
+                    });
                 });
             });
             

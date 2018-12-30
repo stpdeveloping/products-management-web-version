@@ -15,20 +15,52 @@ namespace NET_Core_Products_Management__web_version_.Controllers
         {
             productRepository = new ProductRepository(new ProductsContext());
         }
-        public ViewResult Index()
+        [HttpGet]
+        public ActionResult Index()
         {
             return View(productRepository.LoadProducts()
                 .OrderBy(p => p.productId).ToList());
         }
         public ViewResult ProductCreation()
         {
-            return View();
+            var prodTemplate = new ExtendedProduct();
+            prodTemplate.Warehouses
+                .AddRange(productRepository.GetWarehousesNames());
+            return View(prodTemplate);
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public ActionResult ProductCreation(ExtendedProduct newProd)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (ModelState.IsValid)
+            {
+                productRepository.CreateNewProduct(newProd);
+                return RedirectToAction("Index");
+            }
+            else return View(newProd);
+        }
+        [HttpPut]
+        public ActionResult ProductUpdate(ProductToUpdate p)
+        {
+            if (ModelState.IsValid)
+            {
+                productRepository
+                    .UpdateProductProperty
+                    (p.columnName, p.productId, p.value, p.productMagName);
+                return Ok();
+            }
+            else return BadRequest("Field cannot be empty!");
+        }
+        [HttpDelete]
+        public ActionResult ProductDelete(int id)
+        {
+            if (productRepository.RemoveProducts(id))
+                return Ok();
+            else return BadRequest("Incorrect id!");
+        }
+        [HttpPost]
+        public ActionResult ProperWhSymbol(string warehouseName)
+        {
+            return Json(productRepository.GetWarehouseSymbol(warehouseName));
         }
     }
 }

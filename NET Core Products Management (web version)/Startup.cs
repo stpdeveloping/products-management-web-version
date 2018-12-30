@@ -44,7 +44,6 @@ namespace NET_Core_Products_Management__web_version_
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 
